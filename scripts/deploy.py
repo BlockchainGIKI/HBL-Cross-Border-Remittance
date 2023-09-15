@@ -119,28 +119,55 @@ def deploy_and_create():
 def deploy_for_interface():
     ######### This is for development only #########
     account = accounts.add(
-        0x241FC0EB9CC758A2BABAB5199FF2C1D36906C44ED51E213AA0FCE7FA96D27A8B
+        0x473A78A3A2DA27DC536882498C811584AFE44A8019DEFB0D852C3612F877F8DF
     )
     node_account = accounts.add(
-        0x1E6893C8C81E57E09857F3A0DB205ACB75C9D38CD9E3985BE37F0B9B530D98A1
+        0xD9FF1BFA061AC694ECECEFDD79238BCCC6112C439B2168639F25A3D086BEF0B9
     )
     super_admin = accounts.add(
-        0xB220AD8D31D807EBA757A0CF8122D257011A4B1E1722D6DD552A179B76273380
+        0xE7DA6992A7DB469BA463E346219B213CEB913FC3D844C66FC6915ECB45B6BC71
     )
+    ######### This is for development only #########
+
+    ######### Contract deployment #########
+    # print("Deploying Remittance Token...")
+    # rem_token = RemittanceToken.deploy({"from": account})
+    # print(f"Remittance Token deployed at {rem_token.address}")
+
+    # print("Deploying Token Management...")
+    # token_management = TokenManagement.deploy(
+    #     rem_token.address, rem_token.address, {"from": super_admin}
+    # )
+    # print(f"Remittance Token deployed at {token_management}")
+
     token_management = TokenManagement[-1]
+    # ######### Contract deployment #########
+
+    # ######### Setting nodes as admin #########
+    # token_management.setNodeAsAdmin(account, {"from": super_admin})
+    # token_management.setNodeAsAdmin(node_account, {"from": super_admin})
+    # token_management.setNodeAsAdmin(
+    #     "0x6bad94d9ea5198d7aa0f75c692d63254e231445f", {"from": super_admin}
+    # )
     # token_management.setNodeAsAdmin(
     #     "0x0000000000000000000000000000000000000000", {"from": super_admin}
     # )
+    ######### Setting nodes as admin #########
 
-    # Creating customers
+    ######### Creating customers #########
     # token_management.createCustomer("Jon Doe", 5000, {"from": account})
     # token_management.createCustomer("Virat Kohli", 4000, {"from": account})
-    tx = token_management.issueTransaction(1, 2, 96, {"from": account})
-    token_management.setTransactionParameters(
-        tx.txid, tx.timestamp, tx.gas_used, 1, 2, {"from": account}
-    )
-    print(token_management.getCustomer(1))
-    print(token_management.getRemitTransactionHistory(1))
+    ######### Creating customers #########
+
+    ######### Issuing transactions and setting transaction parameters #########
+    # tx = token_management.issueTransaction(1, 2, 96, {"from": account})
+    # token_management.setTransactionParameters(
+    #     tx.txid, tx.timestamp, tx.gas_used, 1, 2, {"from": account}
+    # )
+    ######## Issuing transactions and setting transaction parameters #########
+
+    # print(token_management.getCustomer(1))
+    print(token_management.getRemitTransactionHistory(2))
     print(token_management.getReceiveTransactionHistory(2))
 
 
