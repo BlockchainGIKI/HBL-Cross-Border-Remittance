@@ -119,13 +119,13 @@ def deploy_and_create():
 def deploy_for_interface():
     ######### This is for development only #########
     account = accounts.add(
-        0x473A78A3A2DA27DC536882498C811584AFE44A8019DEFB0D852C3612F877F8DF
+        0x83C26C12C2CBFE0268E85F1675D4D187D258461AE69EF0D2AA7F98C2D4F82A9B
     )
     node_account = accounts.add(
-        0xD9FF1BFA061AC694ECECEFDD79238BCCC6112C439B2168639F25A3D086BEF0B9
+        0xCB28333503164C1E1F3B7D9201E54976E6B6A00B6482CB95595C5C41B0D47F09
     )
     super_admin = accounts.add(
-        0xE7DA6992A7DB469BA463E346219B213CEB913FC3D844C66FC6915ECB45B6BC71
+        0xE2946875BEEA7B8A3DA8EC5BBA89945D72188C460D6B9CF15E8E2C2A3D5E43C2
     )
     ######### This is for development only #########
 
@@ -152,6 +152,13 @@ def deploy_for_interface():
     # token_management.setNodeAsAdmin(
     #     "0x0000000000000000000000000000000000000000", {"from": super_admin}
     # )
+    # token_management.createManager(
+    #     "John Doe", 69, "Swat", account, {"from": super_admin}
+    # )
+    # token_management.createManager(
+    #     "Johnny Frank", 456, "Karachi", node_account, {"from": super_admin}
+    # )
+    # print(token_management.getManager(node_account, {"from": node_account}))
     ######### Setting nodes as admin #########
 
     ######### Creating customers #########
@@ -160,15 +167,15 @@ def deploy_for_interface():
     ######### Creating customers #########
 
     ######### Issuing transactions and setting transaction parameters #########
-    # tx = token_management.issueTransaction(1, 2, 96, {"from": account})
-    # token_management.setTransactionParameters(
-    #     tx.txid, tx.timestamp, tx.gas_used, 1, 2, {"from": account}
-    # )
+    tx = token_management.issueTransaction(3, 4, 1, {"from": account})
+    token_management.setTransactionParameters(
+        tx.txid, tx.timestamp, tx.gas_used, 3, 4, {"from": account}
+    )
     ######## Issuing transactions and setting transaction parameters #########
 
     # print(token_management.getCustomer(1))
-    print(token_management.getRemitTransactionHistory(2))
-    print(token_management.getReceiveTransactionHistory(2))
+    # print(token_management.getRemitTransactionHistory(2))
+    # print(token_management.getReceiveTransactionHistory(2))
 
 
 def kachra():

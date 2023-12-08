@@ -52,6 +52,15 @@ contract TokenManagement is AccessControl {
         uint256 balance;
         uint256 number_of_rem_transactions;
         uint256 number_of_ben_transactions;
+        bool status;
+    }
+
+    struct Manager {
+        string name;
+        uint256 branch_code;
+        string location;
+        uint256 number_of_customers;
+        address account;
     }
 
     mapping(uint256 customerAccNumber => string customerName)
@@ -60,6 +69,12 @@ contract TokenManagement is AccessControl {
         private accNumtoTypetoTransactions;
     mapping(uint256 => User) private accNumToUser;
     mapping(uint256 => bool) private accNumToUserStatus;
+    mapping(address => User[]) private accountToCustomers;
+    mapping(address => mapping(uint256 => uint256))
+        private accountToAccNumToIndex;
+    mapping(address => uint256) private accountToBranchCode;
+    mapping(address => Manager) private accountToManager;
+    mapping(bytes => Transaction) private txHashToTx;
 
     ///////////////////
     // Events /////////
@@ -111,7 +126,7 @@ contract TokenManagement is AccessControl {
         super_admin = msg.sender;
     }
 
-    function setNodeAsAdmin(address _node) external onlyRole(SUPER_ADMIN_ROLE) {
+    function setNodeAsAdmin(address _node) internal onlyRole(SUPER_ADMIN_ROLE) {
         _grantRole(ADMIN_ROLE, _node);
     }
 
@@ -119,6 +134,27 @@ contract TokenManagement is AccessControl {
         address _node
     ) external onlyRole(SUPER_ADMIN_ROLE) {
         _revokeRole(ADMIN_ROLE, _node);
+    }
+
+    function createManager(
+        string memory _name,
+        uint256 _branch_code,
+        string memory _location,
+        address _account
+    ) external onlyRole(SUPER_ADMIN_ROLE) {
+        require(
+            accountToBranchCode[_account] != _branch_code,
+            "This manager already exists"
+        );
+        accountToManager[_account] = Manager(
+            _name,
+            _branch_code,
+            _location,
+            0,
+            _account
+        );
+        accountToBranchCode[_account] = _branch_code;
+        setNodeAsAdmin(_account);
     }
 
     function createCustomer(
@@ -131,10 +167,18 @@ contract TokenManagement is AccessControl {
             active_account_numbers,
             _balance,
             0,
-            0
+            0,
+            true
         );
         customerAccountNumbertoName[active_account_numbers] = _name;
         accNumToUserStatus[active_account_numbers] = true;
+        accountToCustomers[msg.sender].push(
+            User(_name, active_account_numbers, _balance, 0, 0, true)
+        );
+        accountToAccNumToIndex[msg.sender][
+            active_account_numbers
+        ] = accountToManager[msg.sender].number_of_customers;
+        accountToManager[msg.sender].number_of_customers += 1;
         emit CustomerCreated(true);
     }
 
@@ -146,6 +190,22 @@ contract TokenManagement is AccessControl {
         }
         deleted_customer_account_numbers.push(_account_number);
         accNumToUserStatus[_account_number] = false;
+    }
+
+    function removeBranchCustomer(
+        uint256 _acc_num
+    ) external onlyRole(ADMIN_ROLE) moreThanZero(_acc_num) {
+        if (_acc_num > active_account_numbers) {
+            revert TokenManagement__AccountNumerOutOfBounds();
+        }
+        uint256 index = accountToAccNumToIndex[msg.sender][_acc_num];
+        require(
+            accountToCustomers[msg.sender][index].account_number == _acc_num,
+            "You cannot remove other branch customers"
+        );
+        deleted_customer_account_numbers.push(_acc_num);
+        accNumToUserStatus[_acc_num] = false;
+        accountToCustomers[msg.sender][index].status = false;
     }
 
     function issueTransaction(
@@ -236,6 +296,21 @@ contract TokenManagement is AccessControl {
         accNumtoTypetoTransactions[_ben][false][txArrayLength - 1]
             .datetime = _datetime;
         accNumtoTypetoTransactions[_ben][false][txArrayLength - 1].fee = _fee;
+
+        txHashToTx[_tx_hash] = Transaction(
+            accNumtoTypetoTransactions[_rem][true][txArrayLength - 1]
+                .remitter_name,
+            accNumtoTypetoTransactions[_rem][true][txArrayLength - 1]
+                .beneficiary_name,
+            accNumtoTypetoTransactions[_rem][true][txArrayLength - 1]
+                .remitter_account_number,
+            accNumtoTypetoTransactions[_rem][true][txArrayLength - 1]
+                .beneficiary_account_number,
+            accNumtoTypetoTransactions[_rem][true][txArrayLength - 1].amount,
+            _tx_hash,
+            _datetime,
+            _fee
+        );
     }
 
     function getRemitTransactionHistory(
@@ -244,9 +319,31 @@ contract TokenManagement is AccessControl {
         return accNumtoTypetoTransactions[_acc_num][true];
     }
 
+    function getBranchRemTxHistory(
+        uint256 _acc_num
+    ) external view onlyRole(ADMIN_ROLE) returns (Transaction[] memory) {
+        uint256 index = accountToAccNumToIndex[msg.sender][_acc_num];
+        require(
+            accountToCustomers[msg.sender][index].account_number == _acc_num,
+            "You cannot access transaction history of other branch customers"
+        );
+        return accNumtoTypetoTransactions[_acc_num][true];
+    }
+
     function getReceiveTransactionHistory(
         uint256 _acc_num
     ) external view onlyRole(ADMIN_ROLE) returns (Transaction[] memory) {
+        return accNumtoTypetoTransactions[_acc_num][false];
+    }
+
+    function getBranchRecTxHistory(
+        uint256 _acc_num
+    ) external view onlyRole(ADMIN_ROLE) returns (Transaction[] memory) {
+        uint256 index = accountToAccNumToIndex[msg.sender][_acc_num];
+        require(
+            accountToCustomers[msg.sender][index].account_number == _acc_num,
+            "You cannot access transaction history of other branch customers"
+        );
         return accNumtoTypetoTransactions[_acc_num][false];
     }
 
@@ -258,6 +355,18 @@ contract TokenManagement is AccessControl {
         return accNumtoTypetoTransactions[_acc_num][isRem][_t_num];
     }
 
+    function getBranchTx(
+        uint256 _acc_num,
+        bytes memory _tx_hash
+    ) external view onlyRole(ADMIN_ROLE) returns (Transaction memory) {
+        uint256 index = accountToAccNumToIndex[msg.sender][_acc_num];
+        require(
+            accountToCustomers[msg.sender][index].account_number == _acc_num,
+            "You cannot access transaction history of other branch customers"
+        );
+        return txHashToTx[_tx_hash];
+    }
+
     function getCustomer(
         uint256 _acc_number
     ) external view onlyRole(ADMIN_ROLE) returns (User memory) {
@@ -266,6 +375,36 @@ contract TokenManagement is AccessControl {
             "This action cannot be performed on a deleted user!"
         );
         return accNumToUser[_acc_number];
+    }
+
+    function getBranchCustomers()
+        external
+        view
+        onlyRole(ADMIN_ROLE)
+        returns (User[] memory)
+    {
+        require(
+            accountToManager[msg.sender].account == msg.sender,
+            "You cannot access other branch customers"
+        );
+        return accountToCustomers[msg.sender];
+    }
+
+    function getSingleCustomer(
+        uint256 _acc_num
+    ) external view onlyRole(ADMIN_ROLE) returns (User memory) {
+        require(
+            accountToManager[msg.sender].account == msg.sender,
+            "You cannot access other branch customers"
+        );
+        uint256 index = accountToAccNumToIndex[msg.sender][_acc_num];
+        return accountToCustomers[msg.sender][index];
+    }
+
+    function getManager(
+        address _account
+    ) external view onlyRole(SUPER_ADMIN_ROLE) returns (Manager memory) {
+        return accountToManager[_account];
     }
 
     function getDeletedAccountNumbers()
