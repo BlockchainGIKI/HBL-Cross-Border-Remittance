@@ -71,10 +71,11 @@ contract TokenManagement is AccessControl {
     mapping(uint256 => bool) private accNumToUserStatus;
     mapping(address => User[]) private accountToCustomers;
     mapping(address => mapping(uint256 => uint256))
-        private accountToAccNumToIndex;
+        public accountToAccNumToIndex;
     mapping(address => uint256) private accountToBranchCode;
     mapping(address => Manager) private accountToManager;
     mapping(bytes => Transaction) private txHashToTx;
+    mapping(uint256 => address) private customerAccNumToManagerAddress;
 
     ///////////////////
     // Events /////////
@@ -175,10 +176,11 @@ contract TokenManagement is AccessControl {
         accountToCustomers[msg.sender].push(
             User(_name, active_account_numbers, _balance, 0, 0, true)
         );
-        accountToAccNumToIndex[msg.sender][
-            active_account_numbers
-        ] = accountToManager[msg.sender].number_of_customers;
+        accountToAccNumToIndex[msg.sender][active_account_numbers] =
+            accountToCustomers[msg.sender].length -
+            1; // accountToManager[msg.sender].number_of_customers;
         accountToManager[msg.sender].number_of_customers += 1;
+        customerAccNumToManagerAddress[active_account_numbers] = msg.sender;
         emit CustomerCreated(true);
     }
 
@@ -206,6 +208,7 @@ contract TokenManagement is AccessControl {
         deleted_customer_account_numbers.push(_acc_num);
         accNumToUserStatus[_acc_num] = false;
         accountToCustomers[msg.sender][index].status = false;
+        accountToManager[msg.sender].number_of_customers -= 1;
     }
 
     function issueTransaction(
@@ -229,6 +232,10 @@ contract TokenManagement is AccessControl {
         // Setting Remitter properties
         accNumToUser[_rem].balance -= _amount;
         accNumToUser[_rem].number_of_rem_transactions += 1;
+        address manager = customerAccNumToManagerAddress[_rem];
+        uint256 index = accountToAccNumToIndex[manager][_rem];
+        accountToCustomers[manager][index].balance -= _amount;
+        accountToCustomers[manager][index].number_of_rem_transactions += 1;
         accNumtoTypetoTransactions[_rem][true].push(
             Transaction(
                 customerAccountNumbertoName[_rem],
@@ -245,6 +252,10 @@ contract TokenManagement is AccessControl {
         // Setting Beneficiary properties
         accNumToUser[_ben].balance += _amount;
         accNumToUser[_ben].number_of_ben_transactions += 1;
+        manager = customerAccNumToManagerAddress[_ben];
+        index = accountToAccNumToIndex[manager][_ben];
+        accountToCustomers[manager][index].balance += _amount;
+        accountToCustomers[manager][index].number_of_ben_transactions += 1;
         accNumtoTypetoTransactions[_ben][false].push(
             Transaction(
                 customerAccountNumbertoName[_rem],

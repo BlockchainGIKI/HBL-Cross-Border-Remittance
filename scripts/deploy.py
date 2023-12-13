@@ -124,9 +124,15 @@ def deploy_for_interface():
     node_account = accounts.add(
         0xCB28333503164C1E1F3B7D9201E54976E6B6A00B6482CB95595C5C41B0D47F09
     )
+    manager_account = accounts.add(
+        0x86F5CD534AD820AA2AD3CC2289BC36B9FD73523AB3E797FFA46A24B1504EC493
+    )
     super_admin = accounts.add(
         0xE2946875BEEA7B8A3DA8EC5BBA89945D72188C460D6B9CF15E8E2C2A3D5E43C2
     )
+    # account = get_account()
+    # node_account = get_account(1)
+    # super_admin = get_account(2)
     ######### This is for development only #########
 
     ######### Contract deployment #########
@@ -156,23 +162,37 @@ def deploy_for_interface():
     #     "John Doe", 69, "Swat", account, {"from": super_admin}
     # )
     # token_management.createManager(
-    #     "Johnny Frank", 456, "Karachi", node_account, {"from": super_admin}
+    #     "Islam Khan", 46, "Islamabad", manager_account, {"from": super_admin}
     # )
     # print(token_management.getManager(node_account, {"from": node_account}))
     ######### Setting nodes as admin #########
 
     ######### Creating customers #########
+    # token_management.createCustomer("Babar Aslam", 5000, {"from": manager_account})
+    # # print(token_management.accountToAccNumToIndex(account, 1))
+    # token_management.createCustomer("Mehran Khan", 4000, {"from": manager_account})
+    print(token_management.accountToAccNumToIndex(manager_account, 16))
+    # token_management.removeBranchCustomer(1, {"from": manager_account})
     # token_management.createCustomer("Jon Doe", 5000, {"from": account})
+    # print(token_management.accountToAccNumToIndex(account, 3))
     # token_management.createCustomer("Virat Kohli", 4000, {"from": account})
+    # print(token_management.accountToAccNumToIndex(account, 4))
+    # token_management.createCustomer("Jon Doe", 5000, {"from": account})
+    # print(token_management.accountToAccNumToIndex(account, 5))
+    # token_management.createCustomer("Virat Kohli", 4000, {"from": account})
+    # print(token_management.accountToAccNumToIndex(account, 6))
     ######### Creating customers #########
 
     ######### Issuing transactions and setting transaction parameters #########
-    tx = token_management.issueTransaction(3, 4, 1, {"from": account})
-    token_management.setTransactionParameters(
-        tx.txid, tx.timestamp, tx.gas_used, 3, 4, {"from": account}
-    )
+    # tx = token_management.issueTransaction(2, 3, 1, {"from": account})
+    # token_management.setTransactionParameters(
+    #     tx.txid, tx.timestamp, tx.gas_used, 2, 3, {"from": account}
+    # )
     ######## Issuing transactions and setting transaction parameters #########
-
+    # print(token_management.getBranchCustomers({"from": manager_account}))
+    # token_management.removeBranchCustomer(5, {"from": account})
+    print(token_management.getBranchCustomers({"from": manager_account})[2])
+    # print(token_management.getBranchRecTxHistory(16, {"from": account}))
     # print(token_management.getCustomer(1))
     # print(token_management.getRemitTransactionHistory(2))
     # print(token_management.getReceiveTransactionHistory(2))
