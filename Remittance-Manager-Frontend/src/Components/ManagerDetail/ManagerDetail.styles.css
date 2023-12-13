@@ -1,0 +1,53 @@
+.manager-detail-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    max-width: 1450px;
+    margin: 0 auto;
+    background-color: rgb(194, 197, 199);
+}
+
+.main-heading {
+    margin-bottom: 10px;
+}
+
+.main-heading h2 {
+    color: #333;
+    margin: 0;
+}
+
+h2 {
+    color: #333;
+    margin: 0;
+}
+
+.sub-cards-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.green {
+    color: #097969;
+}
+
+.sub-card {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    background-color: rgb(255, 255, 255);
+}
+
+.sub-card h3 {
+    color: #555;
+    margin: 0;
+}
+
+/*h3 {
+    color: #555;
+    margin: 0;
+}*/

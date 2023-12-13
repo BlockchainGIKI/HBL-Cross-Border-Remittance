@@ -1,0 +1,7 @@
+table, thead, tbody {
+    border: 1px solid;
+}
+
+tbody {
+    color: #097969;
+}

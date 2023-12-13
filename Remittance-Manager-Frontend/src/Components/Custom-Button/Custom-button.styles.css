@@ -1,0 +1,30 @@
+.custom-button {
+    float: right;
+    min-width: 165px;
+    width: auto;
+    height: 50px;
+    letter-spacing: 0.5px;
+    line-height: 50px;
+    padding-left: 1px;
+    padding: 0 10px 0 10px;
+    font-size: 15px;
+    background-color: #969393;
+    color: black;
+    text-transform: uppercase;
+    font-family: 'Open Sans Condensed';
+    font-weight: bolder;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+}
+
+.custom-button:hover {
+    background-color: #19665a;
+    color: white;
+    border: 1px solid MediumSeaGreen;
+}
+
+.toLeft {
+    padding-left: 8px;
+}

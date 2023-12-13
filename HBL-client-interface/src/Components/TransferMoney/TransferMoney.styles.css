@@ -1,0 +1,51 @@
+.transfer-card {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+    width: calc(60% - 20px);
+    transition: 0.3s ease;
+    margin: auto;
+    height: 1%;
+}
+
+.transfer-money {
+    display: flex;
+    flex-direction: column;
+}
+
+.col-25 {
+    float: left;
+    width: 25%;
+    margin-top: 18px;
+}
+
+.col-75 {
+    float: left;
+    width: 70%;
+    margin-top: 6px;
+}
+
+.green {
+    color: #097969;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+@media screen and (max-width: 600px) {
+    .col-25, .col-75 {
+      width: 100%;
+      margin-top: 0;
+    }
+}

@@ -1,0 +1,46 @@
+.button-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 1450px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.button-container {
+    background-color: #969393;
+}
+
+.button-container a {
+    color: white;
+    height: 30px;
+    padding-left: 10px;
+    padding-top: 2px;
+    padding-right: 5px;
+    text-decoration: none;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+    margin-top: 5px;
+}
+
+.button-container a:hover {
+    color: green;
+    background-color: #fcfbfb;
+}
+
+button {
+    margin-bottom: 10px;
+}
+
+.functionality-container {
+    flex: 1;
+}
+
+.functionality-content {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+}

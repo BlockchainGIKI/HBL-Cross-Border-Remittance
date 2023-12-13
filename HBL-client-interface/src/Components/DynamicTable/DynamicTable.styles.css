@@ -1,0 +1,17 @@
+.ant-table-tbody {
+    color: #097969;
+    background-color: rgb(194, 197, 199);;
+}
+
+.ant-table-thead {
+    font-weight: bold;
+    font-size: medium;
+}
+
+.green {
+    color: #097969;
+}
+
+.card-background{
+    background-color: rgb(194, 197, 199);;
+}
