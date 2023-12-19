@@ -5,7 +5,7 @@ import { selectKey } from "../keySlice";
 import abi from './ABI';
 
 const TokenManagementAddress = '0x677c57E1f78a4eAB22895Fa8a274EfD9a1dB64C8';
-const Admin = '0xE1D876B3B9c64D1273b00f7D1C9e1923DD5945EF';
+const SuperAdmin = '0xE1D876B3B9c64D1273b00f7D1C9e1923DD5945EF';
 export function useWeb3() {
     const web3 = new Web3('http://localhost:7545');
     const tokenmanagement = new web3.eth.Contract(abi, TokenManagementAddress)
@@ -16,7 +16,7 @@ export function useWeb3() {
     async function GetManager() {
         try {
             console.log('Web3 account: ', account);
-            const manager = await tokenmanagement.methods.getManager(account).call({ from: Admin });
+            const manager = await tokenmanagement.methods.getManager(account).call({ from: SuperAdmin });
             // console.log('Manager :', manager);
             return manager
         } catch (error) {
