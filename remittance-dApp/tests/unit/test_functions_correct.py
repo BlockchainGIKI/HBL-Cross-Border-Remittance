@@ -1,5 +1,5 @@
 from scripts.helpfulscripts import get_account
-from brownie import RemittanceToken, TokenManagement, exceptions
+from brownie import RemittanceToken, TokenManagement, DSCEngine, ERC20Mock, exceptions
 import pytest
 
 
@@ -9,9 +9,10 @@ def test_can_set_node_as_admin_and_create_customer_correctly():
     node_account = get_account(1)
     super_admin = get_account(2)
     rem_token = RemittanceToken.deploy({"from": account})
-    token_management = TokenManagement.deploy(
-        rem_token.address, rem_token.address, {"from": super_admin}
+    engine = DSCEngine.deploy(
+        [rem_token.address], [rem_token.address], 644406.03 * 1e8, {"from": super_admin}
     )
+    token_management = TokenManagement.deploy(rem_token.address, {"from": super_admin})
 
     # Act
     token_management.setNodeAsAdmin(account, {"from": super_admin})
@@ -142,6 +143,31 @@ def test_can_remove_customer_successfully():
         # token_management.removeCustomer(2, {"from": node_account})
 
 
+def test_can_blacklist_customer_successfully():
+    # Arrange
+    account = get_account()
+    node_account = get_account(1)
+    super_admin = get_account(2)
+    rem_token = RemittanceToken.deploy({"from": account})
+    engine = DSCEngine.deploy(
+        [rem_token.address], rem_token.address, 644406.03 * 1e8, {"from": super_admin}
+    )
+    token_management = TokenManagement.deploy(rem_token.address, {"from": super_admin})
+    token_management.createManager(
+        "Shahazad", 123, "Karachi", account, {"from": super_admin}
+    )
+    token_management.createCustomer("Jon Doe", 50, 0xC8, {"from": account})
+    token_management.createCustomer("Jane Doe", 50, 0x89, {"from": account})
+
+    # Act
+    token_management.blacklistBranchCustomer(0xC8, {"from": account})
+
+    # Assert
+    assert token_management.getSingleCustomer(1, {"from": account})[7] == True
+    with pytest.raises(exceptions.VirtualMachineError):
+        token_management.blacklistBranchCustomer(0x89, {"from": node_account})
+
+
 def test_can_issue_transactions_successfully():
     # Arrange
     account = get_account()
@@ -164,6 +190,41 @@ def test_can_issue_transactions_successfully():
     with pytest.raises(exceptions.VirtualMachineError):
         token_management.issueTransaction(1, 2, 0, {"from": account})
         # token_management.issueTransaction(1, 2, 10, {"from": node_account})
+
+
+def test_can_issue_and_send_PKR_successfully():
+    # Arrange
+    account = get_account()
+    node_account = get_account(1)
+    super_admin = get_account(2)
+    rem_token = RemittanceToken.deploy({"from": account})
+    eth = ERC20Mock.deploy({"from": account})
+    eth.mint(account, 100e18, {"from": account})
+    engine = DSCEngine.deploy(
+        [eth.address], rem_token.address, 644406.03 * 1e8, {"from": super_admin}
+    )
+    rem_token.transferOwnership(engine, {"from": account})
+    eth.approve(engine, 1e9, {"from": account})
+    engine.depositCollateralAndMintDsc(eth, 1e6, 10, {"from": account})
+    token_management = TokenManagement.deploy(rem_token.address, {"from": super_admin})
+    rem_token.approve(token_management, 10)
+    token_management.createManager(
+        "Shahazad", 123, "Karachi", account, {"from": super_admin}
+    )
+    token_management.createManager(
+        "Umer", 456, "Rawalpindi", node_account, {"from": super_admin}
+    )
+    token_management.createCustomer("Jon Doe", 50, 0xC8, {"from": account})
+    token_management.createCustomer("Jane Doe", 50, 0x89, {"from": node_account})
+
+    # Act
+    token_management.issueTransaction(1, 2, 5, {"from": account})
+
+    # Assert
+    assert token_management.getSingleCustomer(1, {"from": account})[2] == 45
+    assert rem_token.balanceOf(node_account) == 5
+    # with pytest.raises(exceptions.VirtualMachineError):
+    #     token_management.blacklistBranchCustomer(0x89, {"from": node_account})
 
 
 def test_can_convert_tokens_successfully():

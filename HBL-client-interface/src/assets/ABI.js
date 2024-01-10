@@ -5,11 +5,6 @@ const ABI = [
                 "internalType": "address",
                 "name": "_tokenAddress",
                 "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_priceFeed",
-                "type": "address"
             }
         ],
         "stateMutability": "nonpayable",
@@ -219,8 +214,21 @@ const ABI = [
     {
         "inputs": [
             {
+                "internalType": "bytes",
+                "name": "_CNIC_hash",
+                "type": "bytes"
+            }
+        ],
+        "name": "blacklistBranchCustomer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
-                "name": "_node",
+                "name": "_recipient",
                 "type": "address"
             },
             {
@@ -245,6 +253,11 @@ const ABI = [
                 "internalType": "uint256",
                 "name": "_balance",
                 "type": "uint256"
+            },
+            {
+                "internalType": "bytes",
+                "name": "_CNIC_hash",
+                "type": "bytes"
             }
         ],
         "name": "createCustomer",
@@ -302,6 +315,11 @@ const ABI = [
                         "type": "uint256"
                     },
                     {
+                        "internalType": "bytes",
+                        "name": "CNIC_hash",
+                        "type": "bytes"
+                    },
+                    {
                         "internalType": "uint256",
                         "name": "number_of_rem_transactions",
                         "type": "uint256"
@@ -314,6 +332,11 @@ const ABI = [
                     {
                         "internalType": "bool",
                         "name": "status",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "blacklisted",
                         "type": "bool"
                     }
                 ],
@@ -541,6 +564,11 @@ const ABI = [
                         "type": "uint256"
                     },
                     {
+                        "internalType": "bytes",
+                        "name": "CNIC_hash",
+                        "type": "bytes"
+                    },
+                    {
                         "internalType": "uint256",
                         "name": "number_of_rem_transactions",
                         "type": "uint256"
@@ -553,6 +581,11 @@ const ABI = [
                     {
                         "internalType": "bool",
                         "name": "status",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "blacklisted",
                         "type": "bool"
                     }
                 ],
@@ -792,6 +825,11 @@ const ABI = [
                         "type": "uint256"
                     },
                     {
+                        "internalType": "bytes",
+                        "name": "CNIC_hash",
+                        "type": "bytes"
+                    },
+                    {
                         "internalType": "uint256",
                         "name": "number_of_rem_transactions",
                         "type": "uint256"
@@ -804,6 +842,11 @@ const ABI = [
                     {
                         "internalType": "bool",
                         "name": "status",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "blacklisted",
                         "type": "bool"
                     }
                 ],
@@ -1078,6 +1121,6 @@ const ABI = [
         "stateMutability": "view",
         "type": "function"
     }
-]
+];
 
 export default ABI;

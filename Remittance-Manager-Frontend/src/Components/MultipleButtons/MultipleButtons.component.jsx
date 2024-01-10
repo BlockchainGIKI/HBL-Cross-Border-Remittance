@@ -1,14 +1,14 @@
 import React, { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import DynamicTable from "../DynamicTable/DynamicTable.component";
 import Card from "../Card/Card.component";
 // import CustomButton from "../Custom-Button/Custom-button.component";
 import CreateUser from "../CreateUser/CreateUser.component";
 import RemoveUser from "../RemoveUser/RemoveUser.component";
+import BlacklistUser from "../BlacklistUser/BlacklistUser.component";
+import SendToken from "../SendStableCoin/SendToken.component";
 import ViewTransactionHistory from "../ViewTrxHistory/TrxHistory.component";
 import ViewTrx from "../ViewTrx/ViewTrx.component";
-
 import './MultipleButtons.styles.css';
 
 const MultipleButtons = () => {
@@ -29,6 +29,10 @@ const MultipleButtons = () => {
         handleButtonClick('Remove User', '/home/remove-user');
     }, []);
 
+    const handleBlacklistUser = useCallback(() => {
+        handleButtonClick('Blacklist User', '/home/blacklist-user');
+    }, []);
+
     const handleActiveUsers = useCallback(() => {
         handleButtonClick('View Active Users', '/home/active-users');
     }, []);
@@ -45,6 +49,10 @@ const MultipleButtons = () => {
         handleButtonClick('View Transaction', '/home/transaction-history');
     }, []);
 
+    const handleSendTokens = useCallback(() => {
+        handleButtonClick('Send Stablecoins', '/home/send-stablecoins');
+    }, []);
+
     return (
         <div className="button-card">
             <div className="button-container">
@@ -53,6 +61,9 @@ const MultipleButtons = () => {
                 </a>
                 <a href="#remove" onClick={handleRemoveUser}>
                     Remove User
+                </a>
+                <a href="#blacklist" onClick={handleBlacklistUser}>
+                    Blacklist User
                 </a>
                 <a href="#active" onClick={handleActiveUsers}>
                     View Active Users
@@ -66,16 +77,21 @@ const MultipleButtons = () => {
                 <a href="#transaction" onClick={handleViewTrxHistory}>
                     View Transaction
                 </a>
+                <a href="#send" onClick={handleSendTokens}>
+                    Send Stablecoins
+                </a>
             </div>
             <div className="functionality-container">
                 {selectedButton === 'Create User' && <CreateUser />}
                 {selectedButton === 'Remove User' && <RemoveUser />}
+                {selectedButton === 'Blacklist User' && <BlacklistUser />}
                 {selectedButton === 'View Active Users' && <Card><DynamicTable tableValue="ActiveUsers" forPrint="Active users list">
                 </DynamicTable></Card>}
                 {selectedButton === 'View Deleted Users' && <Card><DynamicTable tableValue="DeletedUsers" forPrint="Deleted users list">
                 </DynamicTable></Card>}
                 {selectedButton === 'View Customer Transaction History' && <ViewTransactionHistory />}
                 {selectedButton === 'View Transaction' && <ViewTrx />}
+                {selectedButton === 'Send Stablecoins' && <SendToken />}
             </div>
         </div>
     )

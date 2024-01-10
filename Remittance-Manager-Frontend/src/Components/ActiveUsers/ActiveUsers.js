@@ -22,6 +22,11 @@ const ActiveUsers = [{
     key: 'account_number',
 },
 {
+    title: 'Blacklisted',
+    dataIndex: 'blacklisted',
+    key: 'blacklisted',
+},
+{
     title: 'Balance (Fiat)',
     dataIndex: 'balance',
     key: 'balance'

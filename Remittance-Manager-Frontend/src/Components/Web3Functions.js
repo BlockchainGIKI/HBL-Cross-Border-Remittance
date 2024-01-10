@@ -3,13 +3,17 @@ import { useSelector } from 'react-redux'
 import { selectAccount } from '../accountSlice';
 import { selectKey } from "../keySlice";
 import abi from './ABI';
+import stableABI from "./StableCoinABI";
 
-const TokenManagementAddress = '0x677c57E1f78a4eAB22895Fa8a274EfD9a1dB64C8';
+const TokenManagementAddressGanache = '0xB27B756C3C6634297484f009C3e4285FDAD30d78';
+const StableCoinAddressGanache = '0x6a135e08C49dCA54989D9e88e9685e54F23383eb';
 
 export function useWeb3() {
     const web3 = new Web3('http://localhost:7545');
-    const tokenmanagement = new web3.eth.Contract(abi, TokenManagementAddress)
+    const tokenmanagement = new web3.eth.Contract(abi, TokenManagementAddressGanache);
     tokenmanagement.handleRevert = true;
+    const stablecoin = new web3.eth.Contract(stableABI, StableCoinAddressGanache);
+    stablecoin.handleRevert = true;
     const account = useSelector(selectAccount);
     const key = useSelector(selectKey);
 
@@ -24,9 +28,9 @@ export function useWeb3() {
         }
     }
 
-    async function CreateCustomer(name, balance) {
+    async function CreateCustomer(name, balance, CNIC_hash) {
         try {
-            await tokenmanagement.methods.createCustomer(name, balance).send({
+            await tokenmanagement.methods.createCustomer(name, balance, CNIC_hash).send({
                 from: account, gas: 1500000, gasPrice: '30000000000'
             });
             console.log(`Created customer ${name} with ${balance}`);
@@ -46,7 +50,33 @@ export function useWeb3() {
         catch (error) {
             console.error('Error:', error);
         }
+    }
 
+    async function BlacklistCustomer(CNIC_hash) {
+        try {
+            await tokenmanagement.methods.blacklistBranchCustomer(CNIC_hash).send({
+                from: account, gas: 1500000, gasPrice: '30000000000'
+            });
+            console.log(`Blacklisted customer with CNIC hash ${CNIC_hash}`);
+        }
+        catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function SendStableCoins(_receiver, _amount) {
+        try {
+            await stablecoin.methods.approve(TokenManagementAddressGanache, _amount).send({
+                from: account, gas: 1500000, gasPrice: '30000000000'
+            });
+            await tokenmanagement.methods.convertTokens(_receiver, _amount).send({
+                from: account, gas: 1500000, gasPrice: '30000000000'
+            });
+            console.log(`Sent ${_amount} stablecoins to ${_receiver}`);
+        }
+        catch (error) {
+            console.error('Error:', error);
+        }
     }
 
     async function ViewActiveCustomers() {
@@ -93,15 +123,29 @@ export function useWeb3() {
         }
     }
 
+    async function GetBalance() {
+        try {
+            const balance = await stablecoin.methods.balanceOf(account).call();
+            console.log('Balance: ', balance);
+            return balance;
+        }
+        catch (error) {
+            console.error('Error in getting transaction:', error);
+        }
+    }
+
 
     return {
         web3,
         GetManager,
         CreateCustomer,
         RemoveCustomer,
+        BlacklistCustomer,
+        SendStableCoins,
         ViewActiveCustomers,
         ViewReceiveHistory,
         ViewRemitHistory,
-        ViewTransaction
+        ViewTransaction,
+        GetBalance
     }
 }

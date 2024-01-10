@@ -1,0 +1,15 @@
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px;
+    background-color: rgb(194, 197, 199);
+}
+
+.group {
+    margin: 0;
+}
+  
+.group label {
+    margin-right: 10px;
+}

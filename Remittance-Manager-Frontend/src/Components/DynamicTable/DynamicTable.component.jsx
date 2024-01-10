@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Table } from 'antd';
 import { useWeb3 } from "../Web3Functions";
-import { useSelector, useDispatch } from "react-redux";
 import ActiveUsers from "../ActiveUsers/ActiveUsers";
 import DeletedUsers from "../DeletedUsers/DeletedUsers";
 import OneTrxHistory from '../OneTrxHistory/OneTrxHistory';
 import { TrxHistory, RemitTrxHistory, ReceiveTrxHistory } from "../ViewTrxHistory/TrxHistory";
 import LoadingSpinner from "./Spinner";
-import { selectChange } from "../../changeSlice";
-import { setChange } from "../../changeSlice";
 
 const DynamicTable = ({ tableValue, forPrint, transactionHistory, selectedOption, transaction }) => {
     // get table column
     const { ViewActiveCustomers, ViewRemitHistory, ViewReceiveHistory } = useWeb3();
-    const change = useSelector(selectChange);
-    const dispatch = useDispatch();
     const [active, setActive] = useState(null);
     const [deleted, setDeleted] = useState(null);
     var column;
@@ -29,6 +24,7 @@ const DynamicTable = ({ tableValue, forPrint, transactionHistory, selectedOption
                 ...item,
                 account_number: String(item.account_number),
                 balance: String(item.balance),
+                blacklisted: item.blacklisted === true ? "Yes" : "No",
                 number_of_rem_transactions: String(item.number_of_rem_transactions),
                 number_of_ben_transactions: String(item.number_of_ben_transactions)
             }));
@@ -44,15 +40,12 @@ const DynamicTable = ({ tableValue, forPrint, transactionHistory, selectedOption
             setDeleted(deletedString);
             console.log('Active: ', activeString);
             console.log('Deleted: ', deletedCustomers);
-            console.log('CHnage: ', change);
-            dispatch(setChange(false));
-
             // ...
         }
         fetchData();
         // console.log('Account: ', account, key);
         // console.log('Customers: ', customers);
-    }, [change]);
+    }, []);
 
 
     if (tableValue === "ActiveUsers") {

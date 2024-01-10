@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: Unlicensed
 
-pragma solidity ^0.8.18;
+pragma solidity 0.8.19;
 
 // import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import {RemittanceToken} from "./RemittanceToken.sol";
+import {DSCEngine} from "./DSCEngine.sol";
 
 contract TokenManagement is AccessControl {
     ///////////////////
@@ -27,13 +28,12 @@ contract TokenManagement is AccessControl {
     address private immutable super_admin;
 
     RemittanceToken private immutable rem_token;
-    address private immutable price_feed;
 
     uint256 private active_account_numbers;
     uint256[] private deleted_customer_account_numbers;
 
-    uint256 private constant ETH_TO_USD_EXCHANGE_RATE = 1664;
-    uint256 private constant ETH_TO_USD_DECIMALS = 8;
+    // uint256 private constant ETH_TO_USD_EXCHANGE_RATE = 1664;
+    // uint256 private constant _DECIMALS = 8;
 
     struct Transaction {
         string remitter_name;
@@ -50,9 +50,11 @@ contract TokenManagement is AccessControl {
         string name;
         uint256 account_number;
         uint256 balance;
+        bytes CNIC_hash;
         uint256 number_of_rem_transactions;
         uint256 number_of_ben_transactions;
         bool status;
+        bool blacklisted;
     }
 
     struct Manager {
@@ -76,6 +78,7 @@ contract TokenManagement is AccessControl {
     mapping(address => Manager) private accountToManager;
     mapping(bytes => Transaction) private txHashToTx;
     mapping(uint256 => address) private customerAccNumToManagerAddress;
+    mapping(address => mapping(bytes => uint256)) private accountToCNICToAccNum;
 
     ///////////////////
     // Events /////////
@@ -116,12 +119,9 @@ contract TokenManagement is AccessControl {
     ///////////////////
     // Functions //////
     ///////////////////
-    constructor(address _tokenAddress, address _priceFeed) {
+    constructor(address _tokenAddress) {
         rem_token = RemittanceToken(_tokenAddress);
-        price_feed = _priceFeed;
-
         active_account_numbers = 0;
-
         _grantRole(SUPER_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(ADMIN_ROLE, SUPER_ADMIN_ROLE);
         super_admin = msg.sender;
@@ -160,27 +160,40 @@ contract TokenManagement is AccessControl {
 
     function createCustomer(
         string memory _name,
-        uint256 _balance
+        uint256 _balance,
+        bytes memory _CNIC_hash
     ) external onlyRole(ADMIN_ROLE) nullName(_name) moreThanZero(_balance) {
         active_account_numbers = active_account_numbers + 1;
         accNumToUser[active_account_numbers] = User(
             _name,
             active_account_numbers,
             _balance,
+            _CNIC_hash,
             0,
             0,
-            true
+            true,
+            false
         );
         customerAccountNumbertoName[active_account_numbers] = _name;
         accNumToUserStatus[active_account_numbers] = true;
         accountToCustomers[msg.sender].push(
-            User(_name, active_account_numbers, _balance, 0, 0, true)
+            User(
+                _name,
+                active_account_numbers,
+                _balance,
+                _CNIC_hash,
+                0,
+                0,
+                true,
+                false
+            )
         );
         accountToAccNumToIndex[msg.sender][active_account_numbers] =
             accountToCustomers[msg.sender].length -
             1; // accountToManager[msg.sender].number_of_customers;
         accountToManager[msg.sender].number_of_customers += 1;
         customerAccNumToManagerAddress[active_account_numbers] = msg.sender;
+        accountToCNICToAccNum[msg.sender][_CNIC_hash] = active_account_numbers;
         emit CustomerCreated(true);
     }
 
@@ -209,6 +222,18 @@ contract TokenManagement is AccessControl {
         accNumToUserStatus[_acc_num] = false;
         accountToCustomers[msg.sender][index].status = false;
         accountToManager[msg.sender].number_of_customers -= 1;
+    }
+
+    function blacklistBranchCustomer(
+        bytes memory _CNIC_hash
+    ) external onlyRole(ADMIN_ROLE) {
+        uint256 _acc_num = accountToCNICToAccNum[msg.sender][_CNIC_hash];
+        uint256 index = accountToAccNumToIndex[msg.sender][_acc_num];
+        require(
+            accountToCustomers[msg.sender][index].account_number == _acc_num,
+            "You cannot blacklist other branch customers"
+        );
+        accountToCustomers[msg.sender][index].blacklisted = true;
     }
 
     function issueTransaction(
@@ -274,14 +299,25 @@ contract TokenManagement is AccessControl {
             customerAccountNumbertoName[_ben],
             _amount
         );
+
+        // convertTokens(
+        //     customerAccNumToManagerAddress[_rem],
+        //     customerAccNumToManagerAddress[_ben],
+        //     _amount
+        // );
     }
 
     function convertTokens(
-        address _node,
+        // address _sender,
+        address _recipient,
         uint256 _amount
-    ) external onlyRole(ADMIN_ROLE) {
-        _amount = (_amount * ETH_TO_USD_EXCHANGE_RATE);
-        bool success = rem_token.transfer(_node, _amount);
+    ) external {
+        // _amount = (_amount);
+        require(
+            rem_token.balanceOf(msg.sender) > _amount,
+            "Insufficient Balance!"
+        );
+        bool success = rem_token.transferFrom(msg.sender, _recipient, _amount);
         if (!success) {
             revert TokenManagement__ConversionFailed();
         }

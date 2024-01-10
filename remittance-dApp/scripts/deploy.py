@@ -1,5 +1,5 @@
 from scripts.helpfulscripts import get_account
-from brownie import RemittanceToken, TokenManagement, accounts
+from brownie import RemittanceToken, TokenManagement, DSCEngine, ERC20Mock, accounts
 
 
 def deploy_and_create():
@@ -223,7 +223,77 @@ def kachra():
     print(a)
 
 
+def deployToGanache():
+    ######### This is for Ganache GUI only #########
+    account = accounts.add(
+        0x83C26C12C2CBFE0268E85F1675D4D187D258461AE69EF0D2AA7F98C2D4F82A9B
+    )
+    node_account = accounts.add(
+        0xCB28333503164C1E1F3B7D9201E54976E6B6A00B6482CB95595C5C41B0D47F09
+    )
+    manager_account = accounts.add(
+        0x86F5CD534AD820AA2AD3CC2289BC36B9FD73523AB3E797FFA46A24B1504EC493
+    )
+    super_admin = accounts.add(
+        0xE2946875BEEA7B8A3DA8EC5BBA89945D72188C460D6B9CF15E8E2C2A3D5E43C2
+    )
+    ######### This is for Ganache GUI only #########
+
+    ######### Contract deployment #########
+    print("Deploying Remittance Token...")
+    rem_token = RemittanceToken.deploy({"from": account})
+    print(f"Remittance Token deployed at {rem_token.address}")
+
+    print("Deploying Mock Ether Token...")
+    eth = ERC20Mock.deploy({"from": account})
+    eth.mint(account, 100e18, {"from": account})
+    print(f"Mock Ether Token deployed at {eth.address}")
+
+    print("Deploying DSCEngine...")
+    engine = DSCEngine.deploy(
+        [eth.address], rem_token.address, 644406.03 * 1e8, {"from": super_admin}
+    )
+    print(f"DSCEngine deployed at {engine.address}")
+    rem_token.transferOwnership(engine, {"from": account})
+    eth.approve(engine, 1e9, {"from": account})
+    engine.depositCollateralAndMintDsc(eth, 1e6, 10, {"from": account})
+    print("Remittance Tokens minted")
+
+    print("Deploying Token Management...")
+    token_management = TokenManagement.deploy(rem_token.address, {"from": super_admin})
+    print(f"Token Management deployed at {token_management}")
+    # ######### Contract deployment #########
+
+    # ######### Setting nodes as admin #########
+    token_management.createManager(
+        "John Doe", 19200, "Swat", account, {"from": super_admin}
+    )
+    token_management.createManager(
+        "Islam Khan", 44000, "Islamabad", manager_account, {"from": super_admin}
+    )
+    ######### Setting nodes as admin #########
+
+
 def main():
     # deploy_and_create()
-    deploy_for_interface()
+    # deploy_for_interface()
     # kachra()
+    # deployToGanache()
+    rem_token = RemittanceToken[-1]
+    account = accounts.add(
+        0x83C26C12C2CBFE0268E85F1675D4D187D258461AE69EF0D2AA7F98C2D4F82A9B
+    )
+    node_account = accounts.add(
+        0xCB28333503164C1E1F3B7D9201E54976E6B6A00B6482CB95595C5C41B0D47F09
+    )
+    super_admin = accounts.add(
+        0xE2946875BEEA7B8A3DA8EC5BBA89945D72188C460D6B9CF15E8E2C2A3D5E43C2
+    )
+    print(rem_token.balanceOf(account))
+    token_management = TokenManagement[-1]
+    token_management.createManager(
+        "John Doe", 19200, "Swat", account, {"from": super_admin}
+    )
+    token_management.createManager(
+        "Islam Khan", 44000, "Islamabad", node_account, {"from": super_admin}
+    )
