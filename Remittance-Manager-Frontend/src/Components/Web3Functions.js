@@ -7,6 +7,7 @@ import stableABI from "./StableCoinABI";
 
 const TokenManagementAddressGanache = '0xB27B756C3C6634297484f009C3e4285FDAD30d78';
 const StableCoinAddressGanache = '0x6a135e08C49dCA54989D9e88e9685e54F23383eb';
+const SuperAdmin = '0xE1D876B3B9c64D1273b00f7D1C9e1923DD5945EF';
 
 export function useWeb3() {
     const web3 = new Web3('http://localhost:7545');
@@ -20,7 +21,7 @@ export function useWeb3() {
     async function GetManager() {
         try {
             console.log('Web3 account: ', account);
-            const manager = await tokenmanagement.methods.getManager(account).call({ from: '0xE1D876B3B9c64D1273b00f7D1C9e1923DD5945EF' });
+            const manager = await tokenmanagement.methods.getManager(account).call({ from: SuperAdmin });
             // console.log('Manager :', manager);
             return manager
         } catch (error) {
