@@ -1,7 +1,5 @@
 import React from "react";
-
 import './Custom-button.styles.css';
-
 const CustomButton = ({ handleClick, children }) => {
     return (
         <div className="toLeft">

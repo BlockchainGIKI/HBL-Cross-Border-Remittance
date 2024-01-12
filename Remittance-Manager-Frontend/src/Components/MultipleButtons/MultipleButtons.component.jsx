@@ -9,6 +9,7 @@ import BlacklistUser from "../BlacklistUser/BlacklistUser.component";
 import SendToken from "../SendStableCoin/SendToken.component";
 import ViewTransactionHistory from "../ViewTrxHistory/TrxHistory.component";
 import ViewTrx from "../ViewTrx/ViewTrx.component";
+import ViewExchangeRate from "../ViewExchangeRate/ViewExchangeRate.component";
 import './MultipleButtons.styles.css';
 
 const MultipleButtons = () => {
@@ -53,6 +54,10 @@ const MultipleButtons = () => {
         handleButtonClick('Send Stablecoins', '/home/send-stablecoins');
     }, []);
 
+    const handleViewExchangeRate = useCallback(() => {
+        handleButtonClick('View Exchange Rate', '/home/view-exchange-rate');
+    }, []);
+
     return (
         <div className="button-card">
             <div className="button-container">
@@ -77,6 +82,9 @@ const MultipleButtons = () => {
                 <a href="#transaction" onClick={handleViewTrxHistory}>
                     View Transaction
                 </a>
+                <a href="#exchange" onClick={handleViewExchangeRate}>
+                    View Exchange Rate
+                </a>
                 <a href="#send" onClick={handleSendTokens}>
                     Send Stablecoins
                 </a>
@@ -91,6 +99,7 @@ const MultipleButtons = () => {
                 </DynamicTable></Card>}
                 {selectedButton === 'View Customer Transaction History' && <ViewTransactionHistory />}
                 {selectedButton === 'View Transaction' && <ViewTrx />}
+                {selectedButton === 'View Exchange Rate' && <ViewExchangeRate />}
                 {selectedButton === 'Send Stablecoins' && <SendToken />}
             </div>
         </div>

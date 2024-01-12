@@ -27,6 +27,7 @@ function App() {
             <Route path='create-user' element={<></>} />
             <Route path='blacklist-user' element={<></>} />
             <Route path='send-stablecoins' element={<></>} />
+            <Route path='view-exchange-rate' element={<></>} />
             <Route path='customer-transaction-history' element={<></>} />
             <Route path='deleted-users' element={<></>} />
             <Route path='transaction-history' element={<></>} />

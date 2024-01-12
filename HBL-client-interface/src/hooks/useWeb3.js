@@ -8,17 +8,12 @@ import { useSelector } from "react-redux";
 
 export function useWeb3() {
   const account = useSelector((state) => state.account.value);
-  const { TokenManagementAddress, SuperAdmin, Admin } = Configs()
+  const { TokenManagementAddress, Admin } = Configs()
   const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'))
   // const eth = Web3.givenProvider
   const tokenmanagement = new web3.eth.Contract(ABI, TokenManagementAddress)
   tokenmanagement.handleRevert = true;
 
-  const superTransactionObject = {
-    from: SuperAdmin,
-    gas: 1500000,
-    gasPrice: '30000000000'
-  }
   const transactionObject = {
     from: Admin,
     gas: 1500000,

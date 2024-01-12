@@ -1,9 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import TransactionHistory from "../TransactionHistory/TransactionHistoryData";
 import { col, col_remit } from "../TransactionHistory/TransactionHistoryColumn";
-import FavortiePeople from "../Favorite/FavoriteData";
-import AccountDetailTable from "../AccountDetail/AccountDetailTable";
 import { useWeb3 } from '../../hooks/useWeb3'
 import { Table, Card } from 'antd';
 import { useSelector, useDispatch } from "react-redux";
@@ -19,10 +16,8 @@ const DynamicTable = ({ tableValue, forPrint, Account }) => {
     const account = useSelector((state) => state.account.value);
     const change = useSelector(selectChange);
     const dispatch = useDispatch();
-    var column;
     var actualValue = {};
     var actual = {};
-    var tableData = [];
 
     const [cust, setCust] = useState(null);
     const [remit_tx, setRemitTx] = useState(null);
@@ -55,10 +50,6 @@ const DynamicTable = ({ tableValue, forPrint, Account }) => {
 
 
     if (tableValue === "TransactionHistory") {
-        // Get table headers in array
-        // column = Object.keys(TransactionHistory[0]);
-        column = TransactionHistory;
-        // Object.assign(actualValue, TransactionHistory);
         if (remit_tx) {
             actualValue = {}
             var dataSource = [];
@@ -99,17 +90,10 @@ const DynamicTable = ({ tableValue, forPrint, Account }) => {
             console.log("remit_tx is null")
         }
     }
-
-    // else if (tableValue === "FavortiePeople") {
-    //     column = Object.keys(FavortiePeople[0]);
-    //     Object.assign(actualValue, FavortiePeople);
-    // }
-
     else if (tableValue === "FavortiePeople") {
-        column = FavortiePeople;
         if (receive_tx) {
             actualValue = {}
-            var dataSource = [];
+            dataSource = [];
             // console.log("Pop", Number(remit_tx[0].fee) * price)
             for (let i = 0; i < cust.number_of_ben_transactions; i++) {
                 var tempo = new Date(Number(receive_tx[i].datetime) * 1000)
@@ -147,14 +131,8 @@ const DynamicTable = ({ tableValue, forPrint, Account }) => {
             console.log("receive_tx is null")
         }
     }
-
     else if (tableValue === "AccountDetailTable") {
-        // column = Object.keys(AccountDetailTable);
-        // column = AccountDetailTable.map((item) => item.key);
-        column = AccountDetailTable;
-        // console.log("Column", column)
 
-        // Object.assign(actualValue, User);
         console.log('User', cust)
         if (cust) {
             actual = [{
@@ -185,46 +163,6 @@ const DynamicTable = ({ tableValue, forPrint, Account }) => {
         }
 
     }
-    tableData = Object.values(actualValue);
-    // get table heading data
-    // const ThData = () => {
-    //     return column.map((data) => {
-    //         return <th key={data.key}>{data}</th>
-    //     })
-    // }
-    const ThData = () => {
-        return column.map((item) => {
-            return <th key={item.key}>{item.heading}</th>;
-        });
-    };
-
-    // get table row data
-    // const tdData = () => {
-    //     return tableData.map((data) => {
-    //         return (
-    //             <tr>
-    //                 {
-    //                     AccountDetailTable.map((v) => {
-    //                         return <td>{data[v]}</td>
-    //                     })
-    //                 }
-    //             </tr>
-    //         )
-    //     })
-    // }
-
-    const tdData = () => {
-        return tableData.map((data) => {
-            return (
-                <tr>
-                    {column.map((v) => (
-                        <td key={v.key}>{data[v.key]}</td>
-                    ))}
-                </tr>
-            )
-        })
-    }
-
     return (
         <div>
             {<LoadingSpinner />}
