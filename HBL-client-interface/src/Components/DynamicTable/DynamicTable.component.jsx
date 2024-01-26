@@ -65,7 +65,8 @@ const DynamicTable = ({ tableValue, forPrint, Account }) => {
                     amount: remit_tx[i].amount,
                     tx_hash: remit_tx[i].tx_hash,
                     datetime: temp.toLocaleString("en-PK"),
-                    fee: ((Number(remit_tx[i].fee) * price) / 10e18),
+                    // fee: ((Number(remit_tx[i].fee) * price) / 10e18),
+                    fee: Number(remit_tx[i].fee) / 1e18,
                 };
                 dataSource[i] = {
                     key: i + 1,
@@ -74,7 +75,7 @@ const DynamicTable = ({ tableValue, forPrint, Account }) => {
                     account: remit_tx[i].beneficiary_account_number,
                     amount: remit_tx[i].amount,
                     // fee: ((Number(remit_tx[i].fee) * price) / 10e18),
-                    fee: remit_tx[i].fee / 1e9,
+                    fee: remit_tx[i].fee / 1e18,
                     date: temp.toLocaleString("en-PK"),
                     hash: remit_tx[i].tx_hash
                 }
@@ -106,7 +107,8 @@ const DynamicTable = ({ tableValue, forPrint, Account }) => {
                     amount: receive_tx[i].amount,
                     tx_hash: receive_tx[i].tx_hash,
                     datetime: tempo.toLocaleString("en-PK"),
-                    fee: ((Number(receive_tx[i].fee) * price) / 1e9),
+                    // fee: ((Number(receive_tx[i].fee) * price) / 1e9),
+                    fee: Number(receive_tx[i].fee) / 1e18,
                 };
                 dataSource[i] = {
                     key: i + 1,
@@ -115,7 +117,7 @@ const DynamicTable = ({ tableValue, forPrint, Account }) => {
                     account: receive_tx[i].remitter_account_number,
                     amount: receive_tx[i].amount,
                     // fee: ((Number(receive_tx[i].fee) * price) / 10e18),
-                    fee: receive_tx[i].fee / 1e9,
+                    fee: receive_tx[i].fee / 1e18,
                     date: tempo.toLocaleString("en-PK"),
                     hash: receive_tx[i].tx_hash
                 }

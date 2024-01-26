@@ -22,6 +22,7 @@ function App() {
           <Route path='/home' element={<Home></Home>}>
             <Route path='favorite' element={<DynamicTable tableValue="FavortiePeople" forPrint="Favoritees list">
             </DynamicTable>} />
+            <Route path='connect-MetaMask' element={<></>} />
             <Route path='active-users' element={<></>} />
             <Route path='remove-user' element={<></>} />
             <Route path='create-user' element={<></>} />

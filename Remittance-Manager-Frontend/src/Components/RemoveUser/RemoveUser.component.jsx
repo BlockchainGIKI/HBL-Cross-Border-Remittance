@@ -17,9 +17,11 @@ const RemoveUser = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log('Account Number to Remove:', accountNumber);
-        await RemoveCustomer(accountNumber);
-        dispatch(setChange(true));
-        window.alert('Removed user');
+        const status = await RemoveCustomer(accountNumber);
+        if (status) {
+            dispatch(setChange(true));
+            window.alert('Removed user');
+        }
     };
 
     return (

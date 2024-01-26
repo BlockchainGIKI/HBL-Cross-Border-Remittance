@@ -10,6 +10,7 @@ import SendToken from "../SendStableCoin/SendToken.component";
 import ViewTransactionHistory from "../ViewTrxHistory/TrxHistory.component";
 import ViewTrx from "../ViewTrx/ViewTrx.component";
 import ViewExchangeRate from "../ViewExchangeRate/ViewExchangeRate.component";
+import ConnectMetaMask from "../ConnectMetaMask/ConnectMetaMask.component";
 import './MultipleButtons.styles.css';
 
 const MultipleButtons = () => {
@@ -58,9 +59,16 @@ const MultipleButtons = () => {
         handleButtonClick('View Exchange Rate', '/home/view-exchange-rate');
     }, []);
 
+    const handleConnectMetaMask = useCallback(() => {
+        handleButtonClick('Connect MetaMask', '/home/connect-MetaMask');
+    }, []);
+
     return (
         <div className="button-card">
             <div className="button-container">
+                <a href="#create" onClick={handleConnectMetaMask}>
+                    Connect MetaMask
+                </a>
                 <a href="#create" onClick={handleCreateUser}>
                     Create User
                 </a>
@@ -90,6 +98,7 @@ const MultipleButtons = () => {
                 </a>
             </div>
             <div className="functionality-container">
+                {selectedButton === 'Connect MetaMask' && <ConnectMetaMask />}
                 {selectedButton === 'Create User' && <CreateUser />}
                 {selectedButton === 'Remove User' && <RemoveUser />}
                 {selectedButton === 'Blacklist User' && <BlacklistUser />}

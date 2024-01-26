@@ -28,9 +28,11 @@ const BlacklistUser = () => {
         hash.update(cnic);
         const cnic_hash = hash.digest('hex');
         console.log('Submitted:', cnic_hash);
-        await BlacklistCustomer('0x' + cnic_hash);
+        const status = await BlacklistCustomer('0x' + cnic_hash);
         // dispatch(setChange(true));
-        window.alert('Blacklisted User');
+        if (status) {
+            window.alert('Blacklisted User');
+        }
     };
 
     return (

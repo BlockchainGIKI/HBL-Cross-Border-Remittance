@@ -33,6 +33,7 @@ const DynamicTable = ({ tableValue, forPrint, transactionHistory, selectedOption
                 ...item,
                 account_number: String(item.account_number),
                 balance: String(item.balance),
+                blacklisted: item.blacklisted === true ? "Yes" : "No",
                 number_of_rem_transactions: String(item.number_of_rem_transactions),
                 number_of_ben_transactions: String(item.number_of_ben_transactions)
             }));

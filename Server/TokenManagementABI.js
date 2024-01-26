@@ -1,4 +1,4 @@
-const abi = [
+const tokenManagementABI = [
     {
         "inputs": [
             {
@@ -220,24 +220,6 @@ const abi = [
             }
         ],
         "name": "blacklistBranchCustomer",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_recipient",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "convertTokens",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1121,6 +1103,6 @@ const abi = [
         "stateMutability": "view",
         "type": "function"
     }
-];
+]
 
-export default abi;
+module.exports = { tokenManagementABI };

@@ -26,22 +26,27 @@ const ViewTransactionHistory = () => {
         console.log('Transaction Type:', selectedOption);
         let tx = [];
         if (selectedOption === 'Remittance') {
+
             tx = await ViewRemitHistory(accountNumber);
+
         }
         else if (selectedOption === 'Beneficiary') {
             tx = await ViewReceiveHistory(accountNumber);
         }
-        const temp = tx.map((item, index) => ({
-            ...item,
-            no: index + 1,
-            amount: String(item.amount),
-            beneficiary_account_number: String(item.beneficiary_account_number),
-            remitter_account_number: String(item.remitter_account_number),
-            fee: String(Number(item.fee) / 1e9),
-            datetime: (new Date(Number(item.datetime) * 1000)).toLocaleString("en-PK")
-        }));
+        if (tx) {
+            const temp = tx.map((item, index) => ({
+                ...item,
+                no: index + 1,
+                amount: String(item.amount),
+                beneficiary_account_number: String(item.beneficiary_account_number),
+                remitter_account_number: String(item.remitter_account_number),
+                fee: String(Number(item.fee) / 1e18),
+                datetime: (new Date(Number(item.datetime) * 1000)).toLocaleString("en-PK")
+            }));
+            setTransactionHistory(temp);
+        }
         // 
-        setTransactionHistory(temp);
+
     };
 
     return (

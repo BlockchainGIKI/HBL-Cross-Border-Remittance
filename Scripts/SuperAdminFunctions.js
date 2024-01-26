@@ -7,11 +7,12 @@ const { config } = require('./Constants');
 require('dotenv').config();
 
 const super_admin = '0xE1D876B3B9c64D1273b00f7D1C9e1923DD5945EF';
-const network = 'Ganache';
-const web3 = new Web3('http://127.0.0.1:7545');
-const token_management = new web3.eth.Contract(tokenManagementABI, config[network]['TokenManagementContractAddress']);
-token_management.handleRevert == true
+const network = 'Sepolia';
+const web3 = new Web3(config[network]['RPC']);
+// const token_management = new web3.eth.Contract(tokenManagementABI, config[network]['TokenManagementContractAddress']);
+// token_management.handleRevert == true;
 const engine = new web3.eth.Contract(engineABI, config[network]['DSCEngineContractAddress']);
+engine.handleRevert == true;
 
 async function setExchangeRate() {
     try {
@@ -29,6 +30,15 @@ async function setExchangeRate() {
 }
 
 async function getExchangeRate() {
+    try {
+        const rate = await engine.methods.getPKRExchangeRate().call();
+        console.log('Current Exchange Rate: ', rate);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function depositCollateral(amount) {
     try {
         const rate = await engine.methods.getPKRExchangeRate().call();
         console.log('Current Exchange Rate: ', rate);

@@ -308,7 +308,7 @@ contract DSCEngine is ReentrancyGuard, Ownable {
         bool success = IERC20(tokenCollateralAddress).transferFrom(
             msg.sender,
             address(this),
-            amountCollateral
+            amountCollateral / PRECISION
         );
         if (!success) {
             revert DSCEngine__TransferFailed();

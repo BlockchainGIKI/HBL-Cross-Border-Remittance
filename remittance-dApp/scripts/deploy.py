@@ -1,5 +1,12 @@
-from scripts.helpfulscripts import get_account
-from brownie import RemittanceToken, TokenManagement, DSCEngine, ERC20Mock, accounts
+from scripts.helpfulscripts import get_account, WETH_ABI
+from brownie import (
+    RemittanceToken,
+    TokenManagement,
+    DSCEngine,
+    ERC20Mock,
+    accounts,
+    Contract,
+)
 
 
 def deploy_and_create():
@@ -274,26 +281,87 @@ def deployToGanache():
     ######### Setting nodes as admin #########
 
 
+def deployToSepolia():
+    ######### This is for Sepolia only #########
+    super_admin = get_account()
+    account = accounts.add(
+        "0x451236f88780e680cc667cf9213137a75cdeadb74c0b788e263fc8eb78549656"
+    )
+    manager_account = accounts.add(
+        "0xd25190a68016a74d836189a3ef41b32b405efa9ec0271f429f99dc84e5a7d18d"
+    )
+    ######### This is for Sepolia only #########
+
+    ######### Contract deployment #########
+    # print("Deploying Remittance Token...")
+    # rem_token = RemittanceToken.deploy({"from": super_admin})
+    # print(f"Remittance Token deployed at {rem_token.address}")
+    rem_token = RemittanceToken[0]
+
+    # print("Deploying DSCEngine...")
+    # weth = ["0xdd13E55209Fd76AfE204dBda4007C227904f0a81"]
+    # engine = DSCEngine.deploy(
+    #     weth, rem_token.address, 709842 * 1e8, {"from": super_admin}
+    # )
+    # print(f"DSCEngine deployed at {engine.address}")
+    engine = DSCEngine[-1]
+    # rem_token.transferOwnership(engine, {"from": super_admin})
+    # weth_contract = Contract.from_explorer("0x1D5A1584152613cBF9278212078F467F54507479")
+    # weth_contract = Contract.from_abi(
+    #     "ERC20", "0xdd13E55209Fd76AfE204dBda4007C227904f0a81", WETH_ABI
+    # )
+    # print(super_admin)
+    # weth_contract.deposit({"from": super_admin, "amount": 20000000000000000})
+    # print(weth_contract.balanceOf(account))
+    # weth_contract.approve(engine.address, 0.02, {"from": super_admin})
+    # engine.depositCollateralAndMintDsc(
+    #     weth_contract.address, 0.02, 100, {"from": super_admin}
+    # )
+    # print("Remittance Tokens minted")
+
+    print("Deploying Token Management...")
+    token_management = TokenManagement.deploy(rem_token.address, {"from": super_admin})
+    print(f"Token Management deployed at {token_management}")
+    # ######### Contract deployment #########
+
+    # ######### Setting nodes as admin #########
+    token_management.createManager(
+        "Muhammad Azam", 19200, "Swat", account, {"from": super_admin}
+    )
+    token_management.createManager(
+        "Islam Khan", 44000, "Islamabad", manager_account, {"from": super_admin}
+    )
+    ######## Setting nodes as admin #########
+
+
 def main():
     # deploy_and_create()
     # deploy_for_interface()
     # kachra()
     # deployToGanache()
-    rem_token = RemittanceToken[-1]
-    account = accounts.add(
-        0x83C26C12C2CBFE0268E85F1675D4D187D258461AE69EF0D2AA7F98C2D4F82A9B
-    )
-    node_account = accounts.add(
-        0xCB28333503164C1E1F3B7D9201E54976E6B6A00B6482CB95595C5C41B0D47F09
-    )
-    super_admin = accounts.add(
-        0xE2946875BEEA7B8A3DA8EC5BBA89945D72188C460D6B9CF15E8E2C2A3D5E43C2
-    )
-    print(rem_token.balanceOf(account))
-    token_management = TokenManagement[-1]
-    token_management.createManager(
-        "John Doe", 19200, "Swat", account, {"from": super_admin}
-    )
-    token_management.createManager(
-        "Islam Khan", 44000, "Islamabad", node_account, {"from": super_admin}
-    )
+    # rem_token = RemittanceToken[-1]
+    # account = accounts.add(
+    #     0x83C26C12C2CBFE0268E85F1675D4D187D258461AE69EF0D2AA7F98C2D4F82A9B
+    # )
+    # node_account = accounts.add(
+    #     0xCB28333503164C1E1F3B7D9201E54976E6B6A00B6482CB95595C5C41B0D47F09
+    # )
+    # super_admin = accounts.add(
+    #     0xE2946875BEEA7B8A3DA8EC5BBA89945D72188C460D6B9CF15E8E2C2A3D5E43C2
+    # )
+    # print(rem_token.balanceOf(account))
+    # token_management = TokenManagement[-1]
+    # token_management.createManager(
+    #     "John Doe", 19200, "Swat", account, {"from": super_admin}
+    # )
+    # token_management.createManager(
+    #     "Islam Khan", 44000, "Islamabad", node_account, {"from": super_admin}
+    # )
+    # deployToSepolia()
+    rem_token = RemittanceToken.deploy({"from": get_account()})
+    # engine = DSCEngine[-1]
+    # print(engine)
+    # weth_contract = Contract.from_abi(
+    #     "ERC20", "0xdd13E55209Fd76AfE204dBda4007C227904f0a81", WETH_ABI
+    # )
+    # print(weth_contract.balanceOf(account))
