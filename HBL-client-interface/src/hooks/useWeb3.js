@@ -69,7 +69,7 @@ export function useWeb3() {
       receiver: receiver,
       amount: amount
     };
-    const response = await axios.get(`http://10.1.33.35:8000/send-transaction`, { params });
+    const response = await axios.get(`http://10.1.33.12:8002/send-transaction`, { params });
     console.log(response.data);
     if (response.data.result) {
       window.alert('Transaction Successful');
